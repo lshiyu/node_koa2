@@ -41,5 +41,8 @@ router.post('/deleteAll/:ids',async(ctx,next)=>{
     ctx.body={success:false,message:'user_id is required'}
   }
 });
+router.get('/img-lists',async (ctx,next)=>{
+  ctx.body={success:true,data:await pool.query('select * from img',[])}
+});
 
 module.exports = router;

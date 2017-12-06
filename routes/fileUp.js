@@ -3,6 +3,7 @@ const inspect = require('util').inspect;
 const path = require('path');
 const fs = require('fs');
 const Busboy = require('busboy');
+const pool=require('../module/pool');
 /**
  * 同步创建文件目录
  * @param  {string} dirname 目录绝对地址
@@ -49,18 +50,22 @@ function uploadFile( ctx, options) {
                     fileType="txt";  
             }
             let filePath=path.join( options.path,  fileType);
-            console.log(filePath,'444444')
             let mkdirResult = mkdirsSync( filePath );
             let _uploadFilePath = path.join( filePath, filename );
             let saveTo = path.join(_uploadFilePath);
-            console.log('4567',saveTo);
             // 文件保存到制定路径
+            console.log(saveTo);
             file.pipe(fs.createWriteStream(saveTo));
             // 文件写入事件结束
             file.on('end', function() {
+                let i=saveTo.indexOf("static");
+                let imgPath=saveTo.slice(i).replace(/\\/g,'/');
                 result.success = true;
                 result.message = '文件上传成功';
-                console.log('文件上传成功！')
+                console.log('文件上传成功！');
+                if(fileType==='images'){
+                    pool.query('insert into img(img_url) values(?)',[imgPath]);
+                }
             })
         });
         // 解析结束事件
@@ -77,7 +82,7 @@ function uploadFile( ctx, options) {
     })
 }
 router.post('/upload',async (ctx,next)=>{
-    let serverFilePath = path.join( './public', 'static' );
+    let serverFilePath = path.join( '../public', 'static' );
     console.log(serverFilePath,process.cwd());
 
     let result1=await uploadFile(ctx,
