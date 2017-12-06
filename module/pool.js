@@ -1,9 +1,9 @@
 const mysql=require('mysql');
 const pool=mysql.createPool({
-    host:'120.92.108.221',
+    host:'*********',
     port:'3306',
-    user:'shiyuli',
-    password:'8704310',
+    user:'********',
+    password:'******',
     database:'test',
     connectionLimit:2
 });
